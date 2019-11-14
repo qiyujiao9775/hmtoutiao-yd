@@ -3,6 +3,12 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 
+import Vant from 'vant'
+import 'vant/lib/index.css'
+import '@/style/index.less'
+import 'amfe-flexible'
+Vue.use(Vant)
+
 Vue.config.productionTip = false
 
 new Vue({
