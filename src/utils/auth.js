@@ -1,6 +1,6 @@
 // 权限认证 token令牌
 // 约定key
-const USER_KEY = 'hmtoutiao-yd-user'
+const USER_KEY = 'hmtoutiao-yd'
 // 获取
 export const getUser = () => {
   // token有效期两小时
