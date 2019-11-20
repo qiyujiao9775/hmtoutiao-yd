@@ -5,7 +5,10 @@
       v-if="path!=='/user'" fixed title="黑马头条" right-text="搜索"
       @click-right="$router.push('/search')"/>
     <div class="my-wrapper" :class="{noTop:path==='/user'}">
-      <router-view></router-view>
+      <keep-alive>
+      <router-view v-if="$route.meta.keepAlive"></router-view>
+    </keep-alive>
+    <router-view v-if="!$route.meta.keepAlive"></router-view>
     </div>
     <van-tabbar route>
       <van-tabbar-item to="/" icon="home-o">首页</van-tabbar-item>

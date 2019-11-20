@@ -20,19 +20,69 @@ const routes = [
   {
     path: '/',
     component: Layout,
-    children: [
-      { path: '/', name: 'home', component: Home },
-      { path: '/question', name: 'question', component: Question },
-      { path: '/video', name: 'video', component: Video },
-      { path: '/user', name: 'user', component: User }
+    children: [{
+      path: '/',
+      name: 'home',
+      component: Home,
+      meta: {
+        keepAlive: true
+      }
+    },
+    {
+      path: '/question',
+      name: 'question',
+      component: Question
+    },
+    {
+      path: '/video',
+      name: 'video',
+      component: Video
+    },
+    {
+      path: '/user',
+      name: 'user',
+      component: User
+    }
     ]
   },
-  { path: '/user/profile', name: 'user-profile', component: UserProfile },
-  { path: '/user/chat', name: 'user-chat', component: UserChat },
-  { path: '/login', name: 'login', component: Login },
-  { path: '/search', name: 'search', component: Search },
-  { path: '/search/result', name: 'search-result', component: SearchResult },
-  { path: '/article', name: 'article', component: Article }
+  {
+    path: '/user/profile',
+    name: 'user-profile',
+    component: UserProfile
+  },
+  {
+    path: '/user/chat',
+    name: 'user-chat',
+    component: UserChat
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: Login
+  },
+  {
+    path: '/search',
+    name: 'serach',
+    component: Search
+  },
+  {
+    path: '/search/result',
+    name: 'serach-result',
+    component: SearchResult
+  },
+  {
+    path: '/article',
+    name: 'article',
+    component: Article
+  },
+  {
+    path: '/article/:id',
+    name: 'article',
+    component: Article,
+    meta: {
+      keepAlive: true
+    }
+  }
 ]
 
 const router = new VueRouter({
