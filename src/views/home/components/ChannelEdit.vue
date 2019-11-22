@@ -15,7 +15,12 @@
       <van-grid class="van-hairline--left">
         <van-grid-item v-for="(item,i) in myChannels" :key="item.id">
           <span @click="enterChannel(i)" class="f12" :class="{red:activeIndex===i}">{{item.name}}</span>
-          <van-icon v-show="editing && i!==0" class="btn" name="cross"></van-icon>
+          <van-icon
+            @click="delChannel(i,item.id)"
+            v-show="editing && i!==0"
+            class="btn"
+            name="cross"
+          ></van-icon>
         </van-grid-item>
       </van-grid>
     </div>
@@ -24,7 +29,7 @@
       <van-grid class="van-hairline--left">
         <van-grid-item v-for="item in optionalChannels" :key="item.id">
           <span class="f12">{{item.name}}</span>
-          <van-icon class="btn" name="plus"></van-icon>
+          <van-icon @click="addChannel(item)" class="btn" name="plus"></van-icon>
         </van-grid-item>
       </van-grid>
     </div>
@@ -32,7 +37,7 @@
 </template>
 
 <script>
-import { getAllChannels } from '@/api/channel'
+import { getAllChannels, delChannel, addChannel } from '@/api/channel'
 export default {
   props: {
     value: {
@@ -56,7 +61,6 @@ export default {
       editing: false,
       // 全部频道
       allChannels: []
-
     }
   },
   computed: {
@@ -66,7 +70,10 @@ export default {
       // 如果找到，不是可选频道，不该出现在新数组中
       // 如果没找到，是可选频道，出现在新数组中
       // this.allChannels.filter(item => '布尔类型')
-      return this.allChannels.filter(item => this.myChannels.findIndex(myItem => myItem.id === item.id) === -1)
+      return this.allChannels.filter(
+        item =>
+          this.myChannels.findIndex(myItem => myItem.id === item.id) === -1
+      )
     }
   },
   created () {
@@ -74,6 +81,70 @@ export default {
     this.getAllChannels()
   },
   methods: {
+    // 添加频道
+
+    async addChannel ({ id, name }) {
+      try {
+        // 包装传参（目的是支撑接口调用， 支持本地存储）
+        // 接口需要[{id,seq}]  排除推荐
+        // 本地需要  id name
+        // 最终数据：[{id ,name ,seq}]
+        // 得到排序频道数组
+        const orderChannels = this.myChannels.map((item, i) => {
+          return {
+            id: item.id,
+            name: item.name,
+            seq: i
+          }
+        })
+        orderChannels.push({ id, name, seq: orderChannels.length })
+        // 后端不用推荐
+        orderChannels.splice(0, 1)
+        await addChannel(orderChannels)
+        console.log(orderChannels)
+        // 提示
+        this.$toast.success('添加成功')
+        // 在我的频道中添加一个新的频道
+        this.myChannels.push({
+          id,
+          name,
+          articles: [],
+          upLoading: false,
+          downLoading: false,
+          finished: false,
+          timestamp: Date.now(),
+          // 记录阅读位置
+          scrollTop: 0
+        })
+      } catch (e) {
+        this.$toast.fail('添加失败')
+      }
+    },
+
+    // 删除频道
+    async delChannel (index, channelId) {
+      try {
+        // 调用删除API 删除
+        await delChannel(channelId)
+        // 提示
+        this.$toast.success('删除成功')
+        // （删除频道索引小于或等于当前激活频道索引）当前激活频道前移一位
+        if (index <= this.activeIndex) {
+          this.$emit('update:activeIndex', this.activeIndex - 1)
+          // this.activeIndex = this.activeIndex - 1
+        }
+        // 删除mychannels数据中index对应频道
+        // 只读  只允许 父传子而不能子传父 使用props接收 单项数据流
+        // 当传入数据是简单数据类型（当修改props数据  不改变其能引用这个条件） 成立 是可以修改数据
+        // 总结：：：传入数据或对象  可以改值 不能重新赋值  否则影响父组件
+        this.myChannels.splice(index, 1)
+        // 通知父组件调用的changeChannel函数
+        // 子传父
+        this.$emit('on-delete')
+      } catch (e) {
+        this.$toast.fail('删除失败')
+      }
+    },
     // 进入频道
     enterChannel (index) {
       // 修改activeIndex的值index即可

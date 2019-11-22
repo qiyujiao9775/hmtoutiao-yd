@@ -24,3 +24,6 @@ export const report = (articleId, type) => {
     type
   })
 }
+export const suggest = (q) => {
+  return request('app/v1_0/suggestion', 'get', { q })
+}

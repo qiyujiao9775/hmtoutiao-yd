@@ -42,8 +42,11 @@
       <van-icon name="wap-nav"></van-icon>
     </span>
     <!-- 使用组件：更多操作 -->
-    <more-action v-if="user.token" v-model="showMoreAction" :articleId="articleId" @on-dislikes="removeArticle()" @on-report="removeArticle()"></more-action>
-    <channel-edit v-model="showChannelEdit" :myChannels="myChannels" :activeIndex.sync="activeIndex">></channel-edit>
+    <more-action v-if="user.token" v-model="showMoreAction" :articleId="articleId" @on-dislikes="removeArticle()" @on-report="removeArticle()"
+    @on-delete="changeChannel()"></more-action>
+    <channel-edit
+    @on-delete="changeChannel"
+    v-model="showChannelEdit" :myChannels="myChannels" :activeIndex.sync="activeIndex">></channel-edit>
   </div>
 </template>
 
